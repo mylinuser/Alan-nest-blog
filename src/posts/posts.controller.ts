@@ -1,49 +1,61 @@
+import { PostsService, PostsRo } from './posts.service';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
-@ApiTags('文章')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @ApiOperation({ summary: '创建文章' })
+  /**
+   * 创建文章
+   * @param post
+   */
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  async create(@Body() post) {
+    return await this.postsService.create(post);
   }
 
-  @ApiOperation({ summary: '获取所有文章' })
+  /**
+   * 获取所有文章
+   */
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  async findAll(@Query() query): Promise<PostsRo> {
+    return await this.postsService.findAll(query);
   }
 
-  @ApiOperation({ summary: '获取指定文章' })
+  /**
+   * 获取指定文章
+   * @param id
+   */
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  async findById(@Param('id') id) {
+    return await this.postsService.findById(id);
   }
 
-  @ApiOperation({ summary: '修改文章' })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  /**
+   * 更新文章
+   * @param id
+   * @param post
+   */
+  @Put(':id')
+  async update(@Param('id') id, @Body() post) {
+    return await this.postsService.updateById(id, post);
   }
 
-  @ApiOperation({ summary: '删除文章' })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  /**
+   * 删除
+   * @param id
+   */
+  @Delete('id')
+  async remove(@Param('id') id) {
+    return await this.postsService.remove(id);
   }
 }
